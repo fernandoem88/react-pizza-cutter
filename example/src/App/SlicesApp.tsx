@@ -6,9 +6,14 @@ import { Title } from './components/Title'
 import { Todos } from './components/Todos'
 import { useRerenderCountLogger } from './hooks'
 
-export const { PizzaCutter, useSlice } = createPizzaCutter<
-  ['todos', 'addTodo', 'title', 'setTitle']
->(['todos', 'addTodo', 'title', 'setTitle'])
+const style = { width: 500, margin: 'auto' } as any
+
+export const { PizzaCutter, useSlice } = createPizzaCutter([
+  'todos',
+  'addTodo',
+  'title',
+  'setTitle'
+] as const)
 
 const TitleContainer = React.memo(() => {
   const title = useSlice('title')
@@ -31,8 +36,6 @@ const AddTodoContainer = React.memo(() => {
   return <AddTodo addTodo={addTodo} />
 })
 
-const style = { width: 500, margin: 'auto' } as any
-
 const ContainerInBetween = React.memo(() => {
   useRerenderCountLogger('ContainerInBetween', {})
   return (
@@ -43,15 +46,15 @@ const ContainerInBetween = React.memo(() => {
   )
 })
 
-const SliceApp: React.FC = () => {
+const SlicesApp: React.FC = () => {
+  useRerenderCountLogger('app root', {})
+
   const [todos, setTodos] = useState<string[]>([])
   const [title, setTitle] = useState('title')
 
   const addTodo = useCallback((todo: string) => {
     setTodos((todos) => [...todos, todo])
   }, [])
-
-  useRerenderCountLogger('app root', {})
 
   return (
     <PizzaCutter slices={{ todos, addTodo, title, setTitle }}>
@@ -60,4 +63,4 @@ const SliceApp: React.FC = () => {
   )
 }
 
-export default SliceApp
+export default SlicesApp

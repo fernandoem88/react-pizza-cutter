@@ -1,2 +1,2 @@
-export { default as Slices } from './Slices'
-export { default as SlicesWithoutExpose } from './SlicesWithoutExpose'
+export { default as SlicesApp } from './SlicesApp'
+export { default as StandardApp } from './StandardApp'

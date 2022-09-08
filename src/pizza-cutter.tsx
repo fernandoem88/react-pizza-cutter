@@ -1,14 +1,13 @@
 import React, { useContext, createContext, useRef } from 'react'
 
-export const createPizzaCutter = <
-  T extends any[],
-  S extends Record<T extends (infer TKeys)[] ? TKeys : string, any> = {
-    [K in T extends (infer TKeys)[] ? TKeys : string]: any
-  }
->(
-  slices: T
+const ChildrenMemo = React.memo(({ children }) => (
+  <React.Fragment>{children}</React.Fragment>
+))
+
+export const createPizzaCutter = <S extends Record<string, any>>(
+  slices: readonly [...(keyof S)[]]
 ) => {
-  type Tkeys = T extends (infer R)[] ? R : never
+  type Tkeys = keyof S
   const ctx = createContext<S>({} as any)
 
   const uniqSliceNames = Array.from(new Set(slices))
@@ -45,7 +44,11 @@ export const createPizzaCutter = <
       }
     }
 
-    return SliceProvider
+    return (props) => (
+      <SliceProvider>
+        <ChildrenMemo>{props.children}</ChildrenMemo>
+      </SliceProvider>
+    )
   }
 
   const SlicesRoot = createSliceProvider(0)

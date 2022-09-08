@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-// import { App } from './App'
-import { Slices } from './App'
+import { SlicesApp } from './App'
 
-ReactDOM.render(<Slices />, document.getElementById('root'))
+ReactDOM.render(<SlicesApp />, document.getElementById('root'))

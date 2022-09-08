@@ -15,6 +15,7 @@
   "main": "dist/index.js",
   "source": [
     "src/index.js",
+    "src/pizza-cutter.js",
     "src/pizza-cutter.tsx"
   ],
   "engines": {
