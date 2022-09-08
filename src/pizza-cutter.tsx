@@ -1,9 +1,5 @@
 import React, { useContext, createContext, useRef } from 'react'
 
-const ChildrenMemo = React.memo(({ children }) => (
-  <React.Fragment>{children}</React.Fragment>
-))
-
 export const createPizzaCutter = <S extends Record<string, any>>(
   slices: readonly [...(keyof S)[]]
 ) => {
@@ -30,28 +26,27 @@ export const createPizzaCutter = <S extends Record<string, any>>(
         </sliceCtx.Provider>
       )
     }
-    SliceProvider.displayName = 'SliceProvider_' + sliceIndex
+    SliceProvider.displayName = 'SliceProvider_' + (sliceName as string)
 
-    const nextSliceIndex = sliceIndex + 1
-    if (nextSliceIndex < uniqSliceNames.length) {
-      const SliceProviderWrapper = createSliceProvider(nextSliceIndex)
-      return function ContextSlice(props: any) {
+    if (sliceIndex > 0) {
+      const SliceProviderWrapper = createSliceProvider(sliceIndex - 1)
+      const ContextSlice: React.FC = (props: any) => {
         return (
-          <SliceProviderWrapper>
-            <SliceProvider>{props.children}</SliceProvider>
-          </SliceProviderWrapper>
+          <SliceProvider>
+            <SliceProviderWrapper>{props.children}</SliceProviderWrapper>
+          </SliceProvider>
         )
       }
+      ContextSlice.displayName = 'ContextSlice_' + (sliceName as string)
+      return ContextSlice
     }
 
-    return (props) => (
-      <SliceProvider>
-        <ChildrenMemo>{props.children}</ChildrenMemo>
-      </SliceProvider>
-    )
+    return function LastSliceProviderWrapper(props) {
+      return <SliceProvider>{props.children}</SliceProvider>
+    }
   }
 
-  const SlicesRoot = createSliceProvider(0)
+  const SlicesRoot = createSliceProvider(uniqSliceNames.length - 1)
 
   const PizzaCutter: React.FC<{ slices: S }> = ({ slices, children }) => {
     return (
