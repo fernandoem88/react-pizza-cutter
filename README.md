@@ -20,7 +20,7 @@ const { PizzaCutter, useSlice } = createPizzaCutter([
   'olive',
   'funghi'
 ])
-const PizzaGustiMisti: React.FC = () => {
+const PizzaMix: React.FC = () => {
   const [pizza, setPizza] = useState({
     diavolo: 100,
     quattroFormaggi: 100,
@@ -28,10 +28,11 @@ const PizzaGustiMisti: React.FC = () => {
     funghi: 100,
     anas: 100
   })
-  // slices will always have a new object reference
-  // using a normal react context, it should create a performance issue
-  // but not using react-pizza-cutter
-  const { ananas, ...slices } = pizza
+
+  const { ananas, ...pizzaSlices } = pizza
+  // because of the object destructuring, pizzaSlices will always have a new object reference
+  // that means, using a normal react context, it should create a performance issue by rerendering all the time.
+  // but not using react-pizza-cutter. because only slice values/references matter
 
   const handleBite = () => {
     const slice = getRandomSliceName(pizza)
@@ -42,44 +43,70 @@ const PizzaGustiMisti: React.FC = () => {
     })
   }
 
-  console.log('PizzaGustiMisti rerender')
+  console.log('PizzaMix rerender')
   return (
-    <PizzaCutter slices={slices}>
-      <PizzaWrapper />
+    <PizzaCutter slices={pizzaSlices}>
+      <PizzaDough />
       <button onClick={handleBite}>bite a slice</button>
     </PizzaCutter>
   )
 }
 
-// PizzaWrapper.tsx
-
-const PizzaWrapper = () => {
-  // some own logic over here
-  // some hook over here
+// PizzaDough.tsx
+// since the PizzaDough component is a direct child of the PizzaMix component,
+// and the PizzaMix component is updated frequently, we want to use React.memo to filter out unwanted rerenders
+const PizzaDough = React.memo(() => {
+  // some mozzarella state over here
+  // some pomodoro hooks over here
   // but no prop drilling
-  console.log('PizzaWrapper rerender')
+  console.log('PizzaDough rerender')
   return (
     <div>
-      <h1>pizza</h1>
-      <PizzaDiavolo />
-      <PizzaOlive />
-      <PizzaQuattroFormaggi />
-      <PizzaFunghi />
+      <h1>pomodo and mozzarella only</h1>
+      <DiavoloSlice />
+      <OliveSlice />
+      <QuattroFormaggiSlice />
+      <FunghiSlice />
     </div>
+  ))
+}
+
+// now we can consume our slice values in the Slice components
+const DiavoloSlice = () => {
+  console.log('DiavoloSlice rerender')
+  const diavolo = useSlice('diavolo')
+  // some hooks with Salame and hot pepper here
+  return <div>{diavolo}</div>
+}
+
+const OliveSlice = () => {
+  console.log('OliveSlice rerender')
+  const diavolo = useSlice('olive')
+  // some other hooks with olive and salvia leaves
+  return <div>{diavolo}</div>
+}
+```
+
+as you can see in the above example, containers states are independent. the change in one component does not affect another component
+
+# PizzaCutter
+
+the PizzaCutter component can be used to provide anything from one parent down to the components tree.
+
+```tsx
+const Provider = (props) => {
+  const [store, dispatch] = useReducer(initialState, reducers)
+  const [randomState, setRandomState] = useState(getRandomValue)
+  return (
+    <PizzaCutter slices={{ store, dispatch, randomState }}>
+      {props.children}
+    </PizzaCutter>
   )
 }
 
-// now we can cosume our slice values in the pizza components
-const PizzaDiavolo = () => {
-  console.log('PizzaDiavolo rerender')
-  const diavolo = useSlice('diavolo')
-  return <div>{diavolo}</div>
-}
-
-const PizzaOlive = () => {
-  console.log('PizzaOlive rerender')
-  const diavolo = useSlice('olive')
-  return <div>{diavolo}</div>
+const ActionBtn = () => {
+  const dispatch = useSlice('dispatch')
+  return <button onClick={() => dispatch('click-action')}>click</button>
 }
 ```
 

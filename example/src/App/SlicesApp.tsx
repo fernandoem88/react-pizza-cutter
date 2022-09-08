@@ -15,33 +15,31 @@ export const { PizzaCutter, useSlice } = createPizzaCutter([
   'setTitle'
 ] as const)
 
-const TitleContainer = React.memo(() => {
+const TitleContainer = () => {
   const title = useSlice('title')
   const setTitle = useSlice('setTitle')
   return <Title title={title} setTitle={setTitle} />
-})
+}
 
-const TodosContainer = React.memo(() => {
+const TodosContainer = () => {
   const todos = useSlice('todos') as string[]
-  return (
-    <div>
-      <Todos todos={todos} />
-      <AddTodoContainer />
-    </div>
-  )
-})
+  return <Todos todos={todos} />
+}
 
-const AddTodoContainer = React.memo(() => {
+const AddTodoContainer = () => {
   const addTodo = useSlice('addTodo')
   return <AddTodo addTodo={addTodo} />
-})
+}
 
 const ContainerInBetween = React.memo(() => {
   useRerenderCountLogger('ContainerInBetween', {})
   return (
     <div style={style}>
       <TitleContainer />
-      <TodosContainer />
+      <div>
+        <TodosContainer />
+        <AddTodoContainer />
+      </div>
     </div>
   )
 })
